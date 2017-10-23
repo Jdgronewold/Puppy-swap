@@ -8,24 +8,26 @@ import { auth } from '../firebase';
 import Home from './Home';
 import Login from './Login';
 
-function PrivateRoute ({component: Component, authed, ...rest}) {
+import './app.css'
+
+function PrivateRoute ({component: Component, passedProps, authed, ...rest}) {
   return (
     <Route
       {...rest}
       render={(props) => authed === true
-        ? <Component {...props} />
+        ? <Component {...props} {...passedProps} />
       : <Redirect to={{pathname: '/welcome', state: {from: props.location}}} />}
     />
   )
 }
 
-function PublicRoute ({component: Component, authed, ...rest}) {
+function PublicRoute ({component: Component, passedProps, authed, ...rest}) {
   return (
     <Route
       {...rest}
       render={(props) => authed === false
-        ? <Component {...props} />
-        : <Redirect to='/dashboard' />}
+        ? <Component {...props} {...passedProps} />
+      : <Redirect to='/home' />}
     />
   )
 }
@@ -74,30 +76,55 @@ export default class App extends React.Component {
 
     return this.state.loading ? <div> Loading </div> : (
       <BrowserRouter>
-        <Switch>
-          <Route exact path='/' render={(props) => {
-              return this.state.authed ?
-              <Redirect to='/welcome' /> :
-              <Redirect to='/home' />
-            }} />
-          <PublicRoute
-            authed={this.state.authed}
-            path='/welcome'
-            component={Login}
-            passedProps={{
-              updateFromChild: this.updateFromChild,
-            }}
-          />
-          <PrivateRoute
-            authed={this.state.authed}
-            path='/home'
-            component={Home}
-            passedProps={{
-              updateFromChild: this.updateFromChild,
-              user: this.state.user
-            }}
-          />
-        </Switch>
+        <div className="App">
+          <div className='App-header'>
+            <div className='header-text'>
+              <span> Pet Swap </span>
+            </div>
+            {
+              this.state.authed &&
+              <button
+                onClick={() => auth().signOut().then(() => {
+                  this.setState({user: null})
+                })}
+                className='header-button'>
+                Log Out
+              </button>
+            }
+            {
+              !this.state.authed &&
+              <button
+                onClick={() => this.props.history.push('/welcome')}
+                className='header-button'>
+                Log In
+              </button>
+            }
+          </div>
+          <Switch>
+            <Route exact path='/' render={(props) => {
+                return this.state.authed ?
+                <Redirect to='/welcome' /> :
+                  <Redirect to='/home' />
+                }} />
+                <PublicRoute
+                  authed={this.state.authed}
+                  path='/welcome'
+                  component={Login}
+                  passedProps={{
+                    updateFromChild: this.updateFromChild,
+                  }}
+                  />
+                <PrivateRoute
+                  authed={this.state.authed}
+                  path='/home'
+                  component={Home}
+                  passedProps={{
+                    updateFromChild: this.updateFromChild,
+                    user: this.state.user
+                  }}
+                  />
+              </Switch>
+        </div>
       </BrowserRouter>
     )
   }

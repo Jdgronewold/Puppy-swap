@@ -12,7 +12,7 @@ class Login extends React.Component {
   }
 
   handleLogin(event) {
-    auth.signInWithPopUp(provider).then( res => {
+    auth().signInWithPopup(provider).then( res => {
       this.props.updateFromChild({user: res.user})
     })
   }
