@@ -1,0 +1,29 @@
+
+
+.App-header {
+  width: 100vw;
+  height: 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #CFFFDD;
+  color: #5C5863;
+  padding: 0 20px;
+  box-sizing: border-box;
+  border-bottom: 2px solid #B4DEC1;
+}
+
+.button {
+  padding: 5px 20px;
+  box-sizing: border-box;
+  border-radius: 15px;
+  height: 40px;
+  background: #fff;
+  border: 2px solid #A85163;
+  color: #A85163;
+  font-weight: bold;
+}
+
+.button:hover {
+  cursor: pointer;
+}

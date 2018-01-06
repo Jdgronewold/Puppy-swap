@@ -2,9 +2,9 @@ import React from 'react';
 import {
   Switch, Route,
   BrowserRouter,
-  Redirect,
+  Redirect
 } from 'react-router-dom';
-import { auth } from '../firebase';
+import { auth, database } from '../firebase';
 import Home from './Home';
 import Login from './Login';
 
@@ -34,7 +34,7 @@ function PublicRoute ({component: Component, passedProps, authed, ...rest}) {
 
 
 
-export default class App extends React.Component {
+class App extends React.Component {
 
   constructor(props) {
     super(props);
@@ -49,12 +49,39 @@ export default class App extends React.Component {
   }
 
   componentDidMount() {
-    this.removeListener = auth().onAuthStateChanged((user) => {
-      if (user) {
-        this.setState({
-          authed: true,
-          loading: false,
-        })
+    this.removeListener = auth().onAuthStateChanged((auth) => {
+      if (auth) {
+        const userRef = database.ref('users/' + auth.uid);
+        userRef.once('value').then(snapshot => {
+          let user;
+
+          if (snapshot.val() === null) {
+
+            user = {
+              email: auth.email,
+              name: auth.displayName,
+              photo: auth.photoURL,
+              groups: ['smile'],
+              chatID: [],
+              uid: auth.uid,
+              active: true,
+            }
+            userRef.set(user)
+
+          } else {
+
+            user = snapshot.val()
+            user.active = true;
+            userRef.update({active: true})
+
+          };
+
+          this.setState({
+            authed: true,
+            loading: false,
+            user: user
+          })
+        });
       } else {
         this.setState({
           authed: false,
@@ -84,20 +111,20 @@ export default class App extends React.Component {
             {
               this.state.authed &&
               <button
-                onClick={() => auth().signOut().then(() => {
-                  this.setState({user: null})
-                })}
-                className='header-button'>
+                onClick={() => {
+                  const userRef = database.ref('users/' + this.state.user.uid);
+                  userRef.update({active: false});
+                  auth().signOut().then(() => {
+                    this.setState({user: null});
+                  })
+                }}
+                className='header-button button'>
                 Log Out
               </button>
             }
             {
               !this.state.authed &&
-              <button
-                onClick={() => this.props.history.push('/welcome')}
-                className='header-button'>
-                Log In
-              </button>
+              <div> </div>
             }
           </div>
           <Switch>
@@ -129,5 +156,6 @@ export default class App extends React.Component {
     )
   }
 
-
 }
+
+export default App;

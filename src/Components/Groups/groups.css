@@ -1,0 +1,29 @@
+.Groups {
+  height: calc(100vh - 60px);
+  border-right: 1px solid grey;
+  position: absolute;
+  top: 60px;
+  left: 0;
+  transition: all 0.5s linear;
+}
+
+.groups-open {
+  width: 33%;
+  visibility: visible;
+}
+
+.groups-closed {
+  width: 0%;
+  visibility: hidden;
+}
+
+.groups-header {
+  height: 50px;
+  background: #f6f6f6;
+  border-bottom: 2px solid #B4DEC1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+}

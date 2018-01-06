@@ -25,10 +25,11 @@ class Login extends React.Component {
         <div className='login-main'>
           <div className='login-main-top-text'>
             <span>
-              You must login or register with a Gmail account.
+              You must login with a Gmail account.
             </span>
           </div>
           <button
+            className='button'
             onClick={this.handleLogin}>
             Sign in with Google
           </button>
